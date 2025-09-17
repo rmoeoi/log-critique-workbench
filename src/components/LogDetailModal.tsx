@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { MessageSquare, AlertTriangle, CheckCircle, Clock, User, Hash, Calendar } from 'lucide-react';
+import { MessageSquare, AlertTriangle, CheckCircle, Clock, User, Hash, Calendar, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface LogDetailModalProps {
@@ -40,7 +40,6 @@ const getStatusConfig = (status: ChatbotLogEntry['status']) => {
 
 export function LogDetailModal({ entry, isOpen, onClose, onSave }: LogDetailModalProps) {
   const [editedEntry, setEditedEntry] = useState<ChatbotLogEntry | null>(null);
-  const [newTag, setNewTag] = useState('');
 
   useEffect(() => {
     if (entry) {
@@ -58,23 +57,6 @@ export function LogDetailModal({ entry, isOpen, onClose, onSave }: LogDetailModa
       onSave(editedEntry);
       onClose();
     }
-  };
-
-  const addTag = () => {
-    if (newTag.trim() && !editedEntry.tags?.includes(newTag.trim())) {
-      setEditedEntry({
-        ...editedEntry,
-        tags: [...(editedEntry.tags || []), newTag.trim()]
-      });
-      setNewTag('');
-    }
-  };
-
-  const removeTag = (tagToRemove: string) => {
-    setEditedEntry({
-      ...editedEntry,
-      tags: editedEntry.tags?.filter(tag => tag !== tagToRemove)
-    });
   };
 
   return (
@@ -108,15 +90,18 @@ export function LogDetailModal({ entry, isOpen, onClose, onSave }: LogDetailModa
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-muted-foreground" />
+              <div>
+                <p className="text-xs text-muted-foreground">Chatbot Source</p>
+                <p className="text-sm font-semibold">{entry.chatbot_source}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
               <User className="h-4 w-4 text-muted-foreground" />
               <div>
                 <p className="text-xs text-muted-foreground">User ID</p>
                 <p className="text-sm font-mono">{entry.context?.user_id || 'Unknown'}</p>
               </div>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Confidence</p>
-              <p className="text-sm font-semibold">{Math.round(entry.confidence_score * 100)}%</p>
             </div>
           </div>
 
@@ -174,12 +159,12 @@ export function LogDetailModal({ entry, isOpen, onClose, onSave }: LogDetailModa
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="account_support">Account Support</SelectItem>
-                    <SelectItem value="billing">Billing</SelectItem>
-                    <SelectItem value="technical">Technical</SelectItem>
-                    <SelectItem value="general_info">General Info</SelectItem>
-                    <SelectItem value="security">Security</SelectItem>
-                    <SelectItem value="data_management">Data Management</SelectItem>
+                    <SelectItem value="crop_management">Crop Management</SelectItem>
+                    <SelectItem value="pest_disease">Pest & Disease</SelectItem>
+                    <SelectItem value="fertilizer_advice">Fertilizer Advice</SelectItem>
+                    <SelectItem value="market_access">Market Access</SelectItem>
+                    <SelectItem value="market_prices">Market Prices</SelectItem>
+                    <SelectItem value="government_support">Government Support</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -195,37 +180,6 @@ export function LogDetailModal({ entry, isOpen, onClose, onSave }: LogDetailModa
                 className="mt-2"
                 rows={4}
               />
-            </div>
-
-            {/* Tags */}
-            <div>
-              <Label>Tags</Label>
-              <div className="mt-2 space-y-2">
-                <div className="flex flex-wrap gap-2">
-                  {editedEntry.tags?.map((tag) => (
-                    <Badge 
-                      key={tag} 
-                      variant="secondary" 
-                      className="cursor-pointer"
-                      onClick={() => removeTag(tag)}
-                    >
-                      {tag} ×
-                    </Badge>
-                  ))}
-                </div>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Add new tag"
-                    value={newTag}
-                    onChange={(e) => setNewTag(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && addTag()}
-                    className="flex-1"
-                  />
-                  <Button onClick={addTag} variant="outline" size="sm">
-                    Add
-                  </Button>
-                </div>
-              </div>
             </div>
           </div>
 

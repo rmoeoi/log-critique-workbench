@@ -2,14 +2,13 @@ export interface ChatbotLogEntry {
   id: string;
   timestamp: string;
   conversation_id: string;
+  chatbot_source: string; // e.g., "Malawi", "Uganda", "Kenya"
   user_query: string;
   bot_response: string;
-  confidence_score: number;
   status: 'unreviewed' | 'flagged' | 'approved' | 'needs_review';
   reviewer_id?: string;
   commentary?: string;
   category?: string;
-  tags?: string[];
   context?: {
     user_id?: string;
     session_id?: string;
@@ -28,9 +27,9 @@ export interface ReviewComment {
 
 export interface FilterOptions {
   status?: string[];
-  confidence_range?: [number, number];
   date_range?: [Date, Date];
   search?: string;
   category?: string[];
+  chatbot_source?: string[];
   reviewer?: string[];
 }

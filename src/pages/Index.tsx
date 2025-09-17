@@ -35,15 +35,14 @@ const Index = () => {
         }
       }
 
-      // Confidence range filter
-      if (filters.confidence_range) {
-        const [min, max] = filters.confidence_range;
-        if (log.confidence_score < min || log.confidence_score > max) return false;
-      }
-
       // Category filter
       if (filters.category && filters.category.length > 0) {
         if (!log.category || !filters.category.includes(log.category)) return false;
+      }
+
+      // Chatbot source filter
+      if (filters.chatbot_source && filters.chatbot_source.length > 0) {
+        if (!filters.chatbot_source.includes(log.chatbot_source)) return false;
       }
 
       return true;
@@ -57,9 +56,9 @@ const Index = () => {
     const flagged = logs.filter(l => l.status === 'flagged').length;
     const needsReview = logs.filter(l => l.status === 'needs_review').length;
     const approved = logs.filter(l => l.status === 'approved').length;
-    const avgConfidence = logs.reduce((sum, l) => sum + l.confidence_score, 0) / total;
+    const reviewed = logs.filter(l => l.commentary).length;
 
-    return { total, unreviewed, flagged, needsReview, approved, avgConfidence };
+    return { total, unreviewed, flagged, needsReview, approved, reviewed };
   }, [logs]);
 
   const handleViewDetails = (entry: ChatbotLogEntry) => {
@@ -89,8 +88,8 @@ const Index = () => {
                 <BarChart3 className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold">Chatbot Log Dashboard</h1>
-                <p className="text-muted-foreground">Review and analyze chatbot conversations</p>
+                <h1 className="text-2xl font-bold">Agricultural Chatbot Log Dashboard</h1>
+                <p className="text-muted-foreground">Review and analyze agricultural chatbot conversations</p>
               </div>
             </div>
             <Button onClick={handleRefresh} variant="outline">
@@ -166,9 +165,12 @@ const Index = () => {
 
           <Card>
             <CardContent className="p-4">
-              <div>
-                <p className="text-sm text-muted-foreground">Avg Confidence</p>
-                <p className="text-lg font-semibold">{Math.round(stats.avgConfidence * 100)}%</p>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4 text-success" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Reviewed</p>
+                  <p className="text-lg font-semibold text-success">{stats.reviewed}</p>
+                </div>
               </div>
             </CardContent>
           </Card>

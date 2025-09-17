@@ -2,7 +2,7 @@ import { ChatbotLogEntry } from '@/types/chatbot';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MessageSquare, AlertTriangle, CheckCircle, Clock, Eye } from 'lucide-react';
+import { MessageSquare, AlertTriangle, CheckCircle, Clock, Eye, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface LogEntryCardProps {
@@ -45,10 +45,8 @@ const getStatusConfig = (status: ChatbotLogEntry['status']) => {
   }
 };
 
-const getConfidenceColor = (score: number) => {
-  if (score >= 0.8) return 'text-success';
-  if (score >= 0.6) return 'text-warning';
-  return 'text-destructive';
+const getConfidenceColor = (hasReview: boolean) => {
+  return hasReview ? 'text-primary' : 'text-muted-foreground';
 };
 
 export function LogEntryCard({ entry, onViewDetails }: LogEntryCardProps) {
@@ -64,13 +62,17 @@ export function LogEntryCard({ entry, onViewDetails }: LogEntryCardProps) {
             <Badge variant={statusConfig.color as any} className="text-xs">
               {statusConfig.label}
             </Badge>
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <MapPin className="h-3 w-3" />
+              <span>{entry.chatbot_source}</span>
+            </div>
             <span className="text-xs text-muted-foreground">
               {new Date(entry.timestamp).toLocaleDateString()} {new Date(entry.timestamp).toLocaleTimeString()}
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <span className={cn("text-sm font-medium", getConfidenceColor(entry.confidence_score))}>
-              {Math.round(entry.confidence_score * 100)}%
+            <span className={cn("text-sm font-medium", getConfidenceColor(!!entry.commentary))}>
+              {entry.commentary ? 'Reviewed' : 'No Review'}
             </span>
             <Button variant="outline" size="sm" onClick={() => onViewDetails(entry)}>
               <Eye className="h-3 w-3 mr-1" />
@@ -100,14 +102,6 @@ export function LogEntryCard({ entry, onViewDetails }: LogEntryCardProps) {
               <Badge variant="outline" className="text-xs">
                 {entry.category.replace('_', ' ')}
               </Badge>
-            )}
-            {entry.tags?.slice(0, 3).map((tag) => (
-              <Badge key={tag} variant="secondary" className="text-xs">
-                {tag}
-              </Badge>
-            ))}
-            {entry.tags && entry.tags.length > 3 && (
-              <span className="text-xs text-muted-foreground">+{entry.tags.length - 3} more</span>
             )}
           </div>
         </div>

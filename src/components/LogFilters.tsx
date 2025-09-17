@@ -6,8 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
-import { Search, Filter, X } from 'lucide-react';
+import { Search, Filter, X, MapPin } from 'lucide-react';
 
 interface LogFiltersProps {
   filters: FilterOptions;
@@ -37,8 +36,13 @@ export function LogFilters({ filters, onFiltersChange, totalCount, filteredCount
     onFiltersChange({ ...filters, category: newCategories });
   };
 
-  const handleConfidenceChange = (value: number[]) => {
-    onFiltersChange({ ...filters, confidence_range: [value[0] / 100, value[1] / 100] });
+  const handleChatbotSourceFilter = (source: string) => {
+    const currentSources = filters.chatbot_source || [];
+    const newSources = currentSources.includes(source)
+      ? currentSources.filter(s => s !== source)
+      : [...currentSources, source];
+    
+    onFiltersChange({ ...filters, chatbot_source: newSources });
   };
 
   const clearFilters = () => {
@@ -50,7 +54,7 @@ export function LogFilters({ filters, onFiltersChange, totalCount, filteredCount
     return value && (Array.isArray(value) ? value.length > 0 : true);
   });
 
-  const confidenceRange = filters.confidence_range || [0, 1];
+  
 
   return (
     <Card>
@@ -102,20 +106,23 @@ export function LogFilters({ filters, onFiltersChange, totalCount, filteredCount
 
         {isExpanded && (
           <div className="space-y-4 pt-2 border-t">
-            {/* Confidence Range */}
+            {/* Chatbot Source Filter */}
             <div>
-              <Label className="text-sm font-medium">
-                Confidence Range: {Math.round(confidenceRange[0] * 100)}% - {Math.round(confidenceRange[1] * 100)}%
+              <Label className="text-sm font-medium mb-2 flex items-center gap-1">
+                <MapPin className="h-3 w-3" />
+                Chatbot Source
               </Label>
-              <div className="mt-2 px-2">
-                <Slider
-                  value={[confidenceRange[0] * 100, confidenceRange[1] * 100]}
-                  onValueChange={handleConfidenceChange}
-                  max={100}
-                  min={0}
-                  step={5}
-                  className="w-full"
-                />
+              <div className="flex flex-wrap gap-2">
+                {['Kenya', 'Uganda', 'Malawi'].map((source) => (
+                  <Badge
+                    key={source}
+                    variant={filters.chatbot_source?.includes(source) ? 'default' : 'outline'}
+                    className="cursor-pointer text-xs"
+                    onClick={() => handleChatbotSourceFilter(source)}
+                  >
+                    {source}
+                  </Badge>
+                ))}
               </div>
             </div>
 
@@ -123,7 +130,7 @@ export function LogFilters({ filters, onFiltersChange, totalCount, filteredCount
             <div>
               <Label className="text-sm font-medium mb-2 block">Categories</Label>
               <div className="flex flex-wrap gap-2">
-                {['account_support', 'billing', 'technical', 'general_info', 'security', 'data_management'].map((category) => (
+                {['crop_management', 'pest_disease', 'fertilizer_advice', 'market_access', 'market_prices', 'government_support'].map((category) => (
                   <Badge
                     key={category}
                     variant={filters.category?.includes(category) ? 'default' : 'outline'}
