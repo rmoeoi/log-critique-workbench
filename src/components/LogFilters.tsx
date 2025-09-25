@@ -54,45 +54,34 @@ export function LogFilters({ filters, onFiltersChange, totalCount, filteredCount
     return value && (Array.isArray(value) ? value.length > 0 : true);
   });
 
-  
-
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Filter className="h-4 w-4" />
-            Filters
-          </CardTitle>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">
-              {filteredCount} of {totalCount} entries
-            </span>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => setIsExpanded(!isExpanded)}
-            >
-              {isExpanded ? 'Collapse' : 'Expand'}
-            </Button>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 text-muted-foreground transform -translate-y-1/2" />
-          <Input
-            placeholder="Search queries and responses..."
-            value={filters.search || ''}
-            onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
-            className="pl-9"
-          />
-        </div>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="flex items-center gap-2 text-lg font-semibold">
+          <Filter className="h-4 w-4" />
+          Filters
+        </h3>
+        <span className="text-sm text-muted-foreground">
+          {filteredCount} of {totalCount} entries
+        </span>
+      </div>
 
-        {/* Quick Status Filters */}
+      {/* Search */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 text-muted-foreground transform -translate-y-1/2" />
+        <Input
+          placeholder="Search queries and responses..."
+          value={filters.search || ''}
+          onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
+          className="pl-9"
+        />
+      </div>
+
+      {/* Quick Status Filters */}
+      <div className="space-y-2">
+        <Label className="text-sm font-medium">Status</Label>
         <div className="flex flex-wrap gap-2">
-          {['unreviewed', 'flagged', 'needs_review', 'approved'].map((status) => (
+          {['unreviewed', 'flagged', 'needs_review', 'approved', 'triaged'].map((status) => (
             <Badge
               key={status}
               variant={filters.status?.includes(status) ? 'default' : 'outline'}
@@ -103,61 +92,57 @@ export function LogFilters({ filters, onFiltersChange, totalCount, filteredCount
             </Badge>
           ))}
         </div>
+      </div>
 
-        {isExpanded && (
-          <div className="space-y-4 pt-2 border-t">
-            {/* Chatbot Source Filter */}
-            <div>
-              <Label className="text-sm font-medium mb-2 flex items-center gap-1">
-                <MapPin className="h-3 w-3" />
-                Chatbot Source
-              </Label>
-              <div className="flex flex-wrap gap-2">
-                {['Kenya', 'Uganda', 'Malawi'].map((source) => (
-                  <Badge
-                    key={source}
-                    variant={filters.chatbot_source?.includes(source) ? 'default' : 'outline'}
-                    className="cursor-pointer text-xs"
-                    onClick={() => handleChatbotSourceFilter(source)}
-                  >
-                    {source}
-                  </Badge>
-                ))}
-              </div>
-            </div>
+      {/* Chatbot Source Filter */}
+      <div className="space-y-2">
+        <Label className="text-sm font-medium flex items-center gap-1">
+          <MapPin className="h-3 w-3" />
+          Chatbot Source
+        </Label>
+        <div className="flex flex-wrap gap-2">
+          {['Kenya', 'Uganda', 'Malawi'].map((source) => (
+            <Badge
+              key={source}
+              variant={filters.chatbot_source?.includes(source) ? 'default' : 'outline'}
+              className="cursor-pointer text-xs"
+              onClick={() => handleChatbotSourceFilter(source)}
+            >
+              {source}
+            </Badge>
+          ))}
+        </div>
+      </div>
 
-            {/* Category Filter */}
-            <div>
-              <Label className="text-sm font-medium mb-2 block">Categories</Label>
-              <div className="flex flex-wrap gap-2">
-                {['crop_management', 'pest_disease', 'fertilizer_advice', 'market_access', 'market_prices', 'government_support'].map((category) => (
-                  <Badge
-                    key={category}
-                    variant={filters.category?.includes(category) ? 'default' : 'outline'}
-                    className="cursor-pointer text-xs"
-                    onClick={() => handleCategoryFilter(category)}
-                  >
-                    {category.replace('_', ' ')}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
+      {/* Category Filter */}
+      <div className="space-y-2">
+        <Label className="text-sm font-medium">Categories</Label>
+        <div className="flex flex-wrap gap-2">
+          {['crop_management', 'pest_disease', 'fertilizer_advice', 'market_access', 'market_prices', 'government_support'].map((category) => (
+            <Badge
+              key={category}
+              variant={filters.category?.includes(category) ? 'default' : 'outline'}
+              className="cursor-pointer text-xs"
+              onClick={() => handleCategoryFilter(category)}
+            >
+              {category.replace('_', ' ')}
+            </Badge>
+          ))}
+        </div>
+      </div>
 
-        {/* Clear Filters */}
-        {hasActiveFilters && (
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={clearFilters}
-            className="w-full"
-          >
-            <X className="h-3 w-3 mr-1" />
-            Clear All Filters
-          </Button>
-        )}
-      </CardContent>
-    </Card>
+      {/* Clear Filters */}
+      {hasActiveFilters && (
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={clearFilters}
+          className="w-full"
+        >
+          <X className="h-3 w-3 mr-1" />
+          Clear All Filters
+        </Button>
+      )}
+    </div>
   );
 }
